@@ -9,9 +9,12 @@ const Header = (props) => {
 
   const canGetBack = props.navigation.canGoBack();
 
+  var hours = new Date().getHours(); 
+  var minutes = new Date().getMinutes(); 
+
   const [currentCity, setCurrentCity] = useState( global._currentCity );
   const [lastTemperature, setCurrentTemperature] = useState('');
-  const [lastForecastUpdate, setLastForecastUpdate] = useState('');
+  const [lastForecastUpdate, setLastForecastUpdate] = useState( `${hours}:${minutes}` );
 
 
   const MINUTE_MS = 2000;
@@ -34,7 +37,6 @@ const Header = (props) => {
   }, []);
 
 
-
   return (
 
     <View style={styles.container}>
@@ -42,10 +44,7 @@ const Header = (props) => {
         {/* seta para voltar e cidade */}
         <View style = {styles.headerLeftInfo} >
           {!canGetBack ? 
-            <Image
-              style={{width: 24}}
-              source={require('@images/back-arrow2.png')}
-            />
+            <Image source={require('@images/back-arrow2.png')}  />
           : '.' }
 
           <Text style={styles.city}> {currentCity} </Text>
@@ -53,7 +52,16 @@ const Header = (props) => {
 
         {/* hora da ultima atualizacao */}
         <View style={styles.lastForecastUpdate}>
+            <Image source={require('@images/_bola3.png')} />
+            <Image source={require('@images/_bola2.png')}  />
+            <Image source={require('@images/_bola1.png')}  />
+
             <Text style={styles.lastForecastUpdateText}> {lastForecastUpdate}</Text>
+
+            <Image source={require('@images/_bola3.png')}  />
+            <Image source={require('@images/_bola2.png')}  />
+            <Image source={require('@images/_bola1.png')}  />
+
         </View>
 
         {/* ultima temperatura obtida */}
@@ -101,15 +109,17 @@ const styles = StyleSheet.create( {
     borderStyle: 'solid',
     borderWidth: 2,
     borderRadius: 10,
-    width: 100,
+    width: 200,
     justifyContent: 'center',
     padding: 10,
     fontFamily: 'Roboto',
+    alignItems: 'center',
   },
 
   lastForecastUpdateText: {
     color: 'white',
     fontFamily: 'Roboto',
+    paddingHorizontal: 10,
   },
 
   headerLeftInfo: {
