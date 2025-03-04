@@ -1,5 +1,5 @@
 
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { useEffect, useState } from 'react';
 import '@/global.js';
 
@@ -16,12 +16,13 @@ const Header = (props) => {
   const [lastTemperature, setCurrentTemperature] = useState('');
   const [lastForecastUpdate, setLastForecastUpdate] = useState( `${hours}:${minutes}` );
 
+  const [loading, setLoading] = useState(true);
 
-  const MINUTE_MS = 2000;
+  const MINUTE_MS = 5000;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
+  const loadTodayForecast = () => {
       console.log('acionou');
+      setLoading(true);
       setCurrentCity( global._currentCity );
 
       var hours = new Date().getHours(); 
@@ -31,6 +32,14 @@ const Header = (props) => {
       setCurrentTemperature( sec );
 
       setLastForecastUpdate( `${hours}:${minutes}` );
+      setLoading(false);
+  }
+
+  useEffect(() => {
+    loadTodayForecast();
+
+    const interval = setInterval(() => {
+      loadTodayForecast();
     }, MINUTE_MS);
 
     return () => clearInterval(interval); 
@@ -39,37 +48,55 @@ const Header = (props) => {
 
   return (
 
-    <View style={styles.container}>
+    
+    <View style={styles.container}  >
+    
+       { loading ? 
 
-        {/* seta para voltar e cidade */}
-        <View style = {styles.headerLeftInfo} >
-          {!canGetBack ? 
-            <Image source={require('@images/back-arrow2.png')}  />
-          : '.' }
+        ( 
+          <>
+            <View >.</View>
+            <ActivityIndicator size='large' color='#007bff' />   
+            <View >.</View>
+          </>
 
-          <Text style={styles.city}> {currentCity} </Text>
-        </View>
+        )  :
+        (
+          <>
+              {/* seta para voltar e cidade */}
+              <View style = {styles.headerLeftInfo} >
+                {!canGetBack ? 
+                  <Image source={require('@images/back-arrow2.png')}  />
+                : ('.') }
 
-        {/* hora da ultima atualizacao */}
-        <View style={styles.lastForecastUpdate}>
-            <Image source={require('@images/_bola3.png')} />
-            <Image source={require('@images/_bola2.png')}  />
-            <Image source={require('@images/_bola1.png')}  />
+                <Text style={styles.city}> {currentCity} </Text>
+              </View>
 
-            <Text style={styles.lastForecastUpdateText}> {lastForecastUpdate}</Text>
+              {/* hora da ultima atualizacao */}
+              <View style={styles.lastForecastUpdate}>
+                  <Image source={require('@images/_bola3.png')} />
+                  <Image source={require('@images/_bola2.png')}  />
+                  <Image source={require('@images/_bola1.png')}  />
 
-            <Image source={require('@images/_bola3.png')}  />
-            <Image source={require('@images/_bola2.png')}  />
-            <Image source={require('@images/_bola1.png')}  />
+                  <Text style={styles.lastForecastUpdateText}> {lastForecastUpdate}</Text>
 
-        </View>
+                  <Image source={require('@images/_bola3.png')}  />
+                  <Image source={require('@images/_bola2.png')}  />
+                  <Image source={require('@images/_bola1.png')}  />
 
-        {/* ultima temperatura obtida */}
-        <View>
-            <Text style={styles.currentTemperature}> {lastTemperature} º</Text>
-        </View>
+              </View>
 
-    </View>
+              {/* ultima temperatura obtida */}
+              <View>
+                  <Text style={styles.currentTemperature}> {lastTemperature} º</Text>
+              </View>
+
+          </>
+        )
+
+      }
+      </View>
+
 
 
   )

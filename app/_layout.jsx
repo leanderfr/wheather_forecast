@@ -5,8 +5,6 @@ import { useFonts } from "expo-font";
 import Header from "@components/header";
 import { useEffect } from 'react';
 
-SplashScreen.preventAutoHideAsync();
-
 const RootLayout = () => {
 
   const [fontLoaded, loadError] = useFonts( {
