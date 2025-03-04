@@ -20,8 +20,11 @@ const Header = (props) => {
 
   const MINUTE_MS = 5000;
 
-  const loadTodayForecast = () => {
-      console.log('acionou');
+  const [data, setData] = useState(undefined);
+
+
+  const loadTodayForecast = async () => {
+
       setLoading(true);
       setCurrentCity( global._currentCity );
 
@@ -32,6 +35,18 @@ const Header = (props) => {
       setCurrentTemperature( sec );
 
       setLastForecastUpdate( `${hours}:${minutes}` );
+
+
+      const url = 'https://jsonplaceholder.typicode.com/users';
+      let result = await fetch(url);
+      
+      if (!result.ok) {
+          const message = `An error has occured: ${result.status}`;
+          throw new Error(message);
+      }
+      result = await result.json()   ;
+      setData(result);
+
       setLoading(false);
   }
 
@@ -88,7 +103,7 @@ const Header = (props) => {
 
               {/* ultima temperatura obtida */}
               <View>
-                  <Text style={styles.currentTemperature}> {lastTemperature} º</Text>
+                  <Text style={styles.currentTemperature}> {lastTemperature} - {data[0].username} º</Text>
               </View>
 
           </>
