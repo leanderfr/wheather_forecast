@@ -2,7 +2,7 @@
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 
-import Header from "@components/header";
+import Header from "@components/Header";
 import { useEffect } from 'react';
 
 const RootLayout = () => {
