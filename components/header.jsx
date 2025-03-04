@@ -1,7 +1,5 @@
 
-import { Text, View, StyleSheet, StatusBar } from "react-native";
-import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import MaterialIcons from '@react-native-vector-icons/material-icons';
+import { Text, View, StyleSheet, Image } from "react-native";
 import { useEffect, useState } from 'react';
 import '@/global.js';
 
@@ -42,12 +40,15 @@ const Header = (props) => {
     <View style={styles.container}>
 
         {/* seta para voltar e cidade */}
-        <View style = {{ display: 'flex', flexDirection: 'row', alignItems: 'center'  }}>
+        <View style = {styles.headerLeftInfo} >
           {!canGetBack ? 
-          <Text style={ {fontSize: 45, color: 'white'}} >⇽</Text>
+            <Image
+              style={{width: 24}}
+              source={require('@images/back-arrow2.png')}
+            />
           : '.' }
 
-          <Text style={styles.title}> {currentCity} </Text>
+          <Text style={styles.city}> {currentCity} </Text>
         </View>
 
         {/* hora da ultima atualizacao */}
@@ -57,7 +58,7 @@ const Header = (props) => {
 
         {/* ultima temperatura obtida */}
         <View>
-            <Text style={styles.currentTemperature}> {lastTemperature}</Text>
+            <Text style={styles.currentTemperature}> {lastTemperature} º</Text>
         </View>
 
     </View>
@@ -76,20 +77,21 @@ const styles = StyleSheet.create( {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    fontFamily: 'Roboto',
   },
 
-  title: {
+  city: {
     fontSize: 18,
     marginLeft: 5,
     color: '#fff',
-    fontFamily: 'Rubik_400Regular', 
+    fontFamily: 'Roboto',
   },
 
   currentTemperature: {
     fontSize: 30,
     paddingRight: 15,
     color: '#fff',
-    fontFamily: 'Rubik_400Regular', 
+    fontFamily: 'Roboto',
  },
 
   lastForecastUpdate: {
@@ -102,11 +104,20 @@ const styles = StyleSheet.create( {
     width: 100,
     justifyContent: 'center',
     padding: 10,
+    fontFamily: 'Roboto',
   },
 
   lastForecastUpdateText: {
     color: 'white',
+    fontFamily: 'Roboto',
   },
+
+  headerLeftInfo: {
+    display: 'flex', 
+    flexDirection: 'row', 
+    alignItems: 'center' ,
+    fontFamily: 'Roboto',
+  }
 
 
 

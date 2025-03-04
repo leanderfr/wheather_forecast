@@ -1,8 +1,5 @@
 import { Text, View, StyleSheet,  TouchableOpacity } from "react-native";
 import { useRouter } from 'expo-router';  
-import { useEffect, useState } from 'react';
-import Header from "@components/header";
-
 
 
 const  HomeScreen = () =>  {
@@ -35,7 +32,7 @@ container: {
   alignItems: 'center',
   padding: 10,
   backgroundColor: '#5A5A5F',
-
+  fontFamily: 'Roboto',
 },
 
 

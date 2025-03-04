@@ -1,18 +1,28 @@
-import { Stack } from "expo-router";
+
+import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
-import {
-  Rubik_400Regular,
-} from '@expo-google-fonts/rubik';
 
 import Header from "@components/header";
+import { useEffect } from 'react';
+
+SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
 
+  const [fontLoaded, loadError] = useFonts( {
+    Roboto: require('@fonts/RobotoRegular.ttf')
+  })
 
-  const [fontsLoaded] = useFonts({
-    Rubik_400Regular,
-  });
+  useEffect(() => {
+    if (fontLoaded) {
+      console.log('carregou');
+      SplashScreen.hideAsync();
+    }
+  }, [fontLoaded, loadError]);
 
+  if (!fontLoaded || loadError)  {
+    return null;
+  }
 
   return <Stack 
     screenOptions={ {
