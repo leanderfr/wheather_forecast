@@ -32,7 +32,6 @@ console.log('carregou......................');
       }
       result = await result.json()   ;
 
-console.log('r='+result);
       setForecasts(result);
 setLoading(false);
 
@@ -47,7 +46,8 @@ setLoading(false);
 
        (
             <>
-            <Text>a={forecasts.name}</Text>              
+              <ForecastList forecasts={forecasts} >
+              </ForecastList>
             </>
 
       ) 

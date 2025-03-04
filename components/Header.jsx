@@ -128,9 +128,9 @@ const styles = StyleSheet.create( {
 
   currentTemperature: {
     fontSize: 30,
-    paddingRight: 15,
     color: '#fff',
     fontFamily: 'Roboto',
+    width: 80,
  },
 
   lastForecastUpdate: {
@@ -140,11 +140,11 @@ const styles = StyleSheet.create( {
     borderStyle: 'solid',
     borderWidth: 2,
     borderRadius: 10,
-    width: 200,
     justifyContent: 'center',
     padding: 10,
     fontFamily: 'Roboto',
     alignItems: 'center',
+    width: 250,
   },
 
   lastForecastUpdateText: {
@@ -158,6 +158,8 @@ const styles = StyleSheet.create( {
     flexDirection: 'row', 
     alignItems: 'center' ,
     fontFamily: 'Roboto',
+    flexBasis: 150,
+    paddingLeft: 15,
   }
 }
 

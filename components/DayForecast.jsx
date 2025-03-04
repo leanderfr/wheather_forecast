@@ -6,7 +6,7 @@ const DayForecast = ( {forecast}) => {
 
   return(
 
-    <View >
+    <View>
       <Text >{forecast.username }</Text>
     </View>
   )
