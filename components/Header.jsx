@@ -20,7 +20,7 @@ const Header = (props) => {
   const [lastTemperature, setCurrentTemperature] = useState('');
   const [lastForecastUpdate, setLastForecastUpdate] = useState( `${hours}:${minutes}` );
 
-  const [countDown, setCountdown] = useState( global.milisecondsToRefresh/1000 );
+  const [countDown, setCountdown] = useState( global.milisecondsToCountDown/1000 -1);
   const [countDownWidth, setCountdownWidth] = useState('100%');
 
   const [loading, setLoading] = useState(true);
@@ -33,9 +33,17 @@ const Header = (props) => {
 
   const readTodayForecast = async () => {
 
+      // limpa os atualizadores
       clearInterval( global.fetchForecastsProcess )
-      clearInterval(global.countDownProcess)
+      clearInterval( global.countDownProcess )
 
+      // coloca a contagem regressiva no ZERO 
+      global.countDown = 0
+      setCountdown( global.countDown )
+      setCountdownWidth('0%')
+
+
+      // animacao de 'processando...'
       setLoading(true);
       setCurrentCity( global._currentCity );
 
@@ -52,11 +60,13 @@ const Header = (props) => {
       }
       let forecast = await result.json()  ;
 
+      // converte a temperatura recebida em Kelvin para Celsius
       let temperatureKelvin = parseInt(forecast.main.temp, 10)  // converte usando só a parte inteira da temperatura em Kelvin
       let temperatureCelsius = temperatureKelvin - 273
 
       setCurrentTemperature( `${temperatureCelsius} º` );
 
+      // memoriza qdo foi a ultima leitura
       let hours = new Date().getHours(); 
       let minutes = new Date().getMinutes(); 
       hours = zeroPad(hours, 2)
@@ -65,27 +75,20 @@ const Header = (props) => {
       setLastForecastUpdate( `${hours}:${minutes}` );
       setLoading(false);
 
-      global.countDown = global.milisecondsToRefresh/1000;
+      // informa que a contagem esta reiniciando
+      global.countDown = global.milisecondsToCountDown/1000;
       setCountdown( global.countDown )
       setCountdownWidth('100%')
 
-
-
-
+      // aciona refresh de dados a cada  'milisecondsToRefresh' segundos
       global.fetchForecastsProcess = setInterval(() => {
-        global.countDown = global.milisecondsToRefresh/1000;
-        setCountdown( global.countDown )
-        setCountdown( '100%' )
-
-        readTodayForecast();
+         readTodayForecast();          
       }, global.milisecondsToRefresh);
 
-      // a cada segundo atualiza a barra de contagem regressiva para novo fetch
+      // atualiza a barra de contagem regressiva a cada 1 segundo
       global.countDownProcess = setInterval(() => {
         updateCountdown();
       }, 1000);
-
-
   }
 
   //**********************************************************************
@@ -93,16 +96,18 @@ const Header = (props) => {
   //**********************************************************************
 
   useEffect(() => {
-      global.countDown = global.milisecondsToRefresh/1000;
-      setCountdown( global.countDown )
+      // inicia contagem no maximo (total segundos e barra progresso com 100%)
+      global.countDown = global.milisecondsToCountDown/1000;
+      setCountdown( global.countDown-1 )
       setCountdownWidth('100%')
 
-
-    readTodayForecast();
-
-    global.fetchForecastsProcess = setInterval(() => {
+      // le pela 1a vez as previsoes
       readTodayForecast();
-    }, global.milisecondsToRefresh);
+
+      // daqui 'milisecondsToRefresh' segundos, vai reler de novo 
+      global.fetchForecastsProcess = setInterval(() => {
+         readTodayForecast();  
+      }, global.milisecondsToRefresh);
 
   }, []);
 
@@ -111,41 +116,36 @@ const Header = (props) => {
   //**********************************************************************
   const updateCountdown = () => {
 
-console.log('cd='+countDown)
-  clearInterval(global.countDownProcess)
+    // desliga contagem regressiva primeiro 
+    clearInterval(global.countDownProcess)
 
-  // necessario usar variavel global pq o calculo da barra de progresso em pixels usa a variavel de state 'countDown',  
-  // que nao pode ser acessada por aqui, ela so é acessivel dentro de 'setCountdown()'
+    // necessario usar variavel global pq o calculo da barra de progresso em pixels usa a variavel de state 'countDown',  
+    // que nao pode ser acessada por aqui, ela so é acessivel dentro de 'setCountdown()'
 
-  // countDown é um espelho de global.countDown  e,
-  // countDownWidth é um espelho de global.countDownWidth
-  global.countDown = global.countDown == 0 ? global.milisecondsToRefresh/1000 : global.countDown-1;
-  setCountdown( global.countDown);
+    // countDown é um espelho de global.countDown  e,
+    // countDownWidth é um espelho de global.countDownWidth
+    let secondsToUpdate = global.milisecondsToCountDown/1000
+    global.countDown = global.countDown < 1  ? secondsToUpdate : global.countDown-1;
+    setCountdown( global.countDown) ;
 
-  let __countDownWidth = Math.floor((global.countDown * 100 / (global.milisecondsToRefresh/1000)  )) + '%'
+    let __countDownWidth = Math.floor(  (global.countDown * 100 / secondsToUpdate )  ) + '%'
 
-console.log('p='+__countDownWidth);
-  setCountdownWidth( __countDownWidth );
+    // atualiza percentual da contagem, consequentemente REACT atualiza a barra de progresso
+    setCountdownWidth( __countDownWidth );
 
-  //document.getElementById('countdownBar').style.width =  __countDownWidth
-
-      // a cada segundo atualiza a barra de contagem regressiva para novo fetch
-      global.countDownProcess = setInterval(() => {
-        updateCountdown();
-      }, 1000);
-
+    // religa contagem regressiva e atualizacao da barra de contagem
+    global.countDownProcess = setInterval(() => {
+      updateCountdown();
+    }, 1000);
 
   }
-
       
-
 
   //**********************************************************************
   //**********************************************************************
 
   return (
-
-    
+   
         <View>
        { loading ? 
 
@@ -202,7 +202,7 @@ console.log('p='+__countDownWidth);
                   <View id='countdownBar'
                       style={{width: countDownWidth, 
                       display:'flex',  backgroundColor:'#f9d69f', justifyContent: 'flex-start', height:20, borderRadius: 5, borderColor: 'transparent'  }}>
-                      <Text>p={countDownWidth}</Text>
+                      <Text>&nbsp;</Text>
                   </View>
               </View>
 
