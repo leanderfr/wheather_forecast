@@ -33,6 +33,9 @@ const Header = (props) => {
 
   const readTodayForecast = async () => {
 
+      clearInterval( global.fetchForecastsProcess )
+      clearInterval(global.countDownProcess)
+
       setLoading(true);
       setCurrentCity( global._currentCity );
 
@@ -60,8 +63,29 @@ const Header = (props) => {
       minutes = zeroPad(minutes, 2)
 
       setLastForecastUpdate( `${hours}:${minutes}` );
-
       setLoading(false);
+
+      global.countDown = global.milisecondsToRefresh/1000;
+      setCountdown( global.countDown )
+      setCountdownWidth('100%')
+
+
+
+
+      global.fetchForecastsProcess = setInterval(() => {
+        global.countDown = global.milisecondsToRefresh/1000;
+        setCountdown( global.countDown )
+        setCountdown( '100%' )
+
+        readTodayForecast();
+      }, global.milisecondsToRefresh);
+
+      // a cada segundo atualiza a barra de contagem regressiva para novo fetch
+      global.countDownProcess = setInterval(() => {
+        updateCountdown();
+      }, 1000);
+
+
   }
 
   //**********************************************************************
@@ -69,26 +93,16 @@ const Header = (props) => {
   //**********************************************************************
 
   useEffect(() => {
+      global.countDown = global.milisecondsToRefresh/1000;
+      setCountdown( global.countDown )
+      setCountdownWidth('100%')
+
 
     readTodayForecast();
 
-    const interval = setInterval(() => {
+    global.fetchForecastsProcess = setInterval(() => {
       readTodayForecast();
     }, global.milisecondsToRefresh);
-
-    // a cada segundo atualiza a barra de contagem regressiva para novo fetch
-    const intervalCountdown = setInterval(() => {
-  // começa com a barra de contagem regressiva completa
-  document.getElementById('countdownBar').style.width = '100%'
-
-      updateCountdown();
-    }, 1000);
-
-    return () => {
-      clearInterval(interval); 
-      clearInterval(intervalCountdown); 
-      //setCountdown(60)
-    }
 
   }, []);
 
@@ -96,6 +110,9 @@ const Header = (props) => {
   // atualiza a barra de contagem regressiva para novo fetch 
   //**********************************************************************
   const updateCountdown = () => {
+
+console.log('cd='+countDown)
+  clearInterval(global.countDownProcess)
 
   // necessario usar variavel global pq o calculo da barra de progresso em pixels usa a variavel de state 'countDown',  
   // que nao pode ser acessada por aqui, ela so é acessivel dentro de 'setCountdown()'
@@ -106,9 +123,17 @@ const Header = (props) => {
   setCountdown( global.countDown);
 
   let __countDownWidth = Math.floor((global.countDown * 100 / (global.milisecondsToRefresh/1000)  )) + '%'
+
+console.log('p='+__countDownWidth);
   setCountdownWidth( __countDownWidth );
 
-  document.getElementById('countdownBar').style.width =  __countDownWidth
+  //document.getElementById('countdownBar').style.width =  __countDownWidth
+
+      // a cada segundo atualiza a barra de contagem regressiva para novo fetch
+      global.countDownProcess = setInterval(() => {
+        updateCountdown();
+      }, 1000);
+
 
   }
 
@@ -175,9 +200,9 @@ const Header = (props) => {
 
               <View style={styles.countdownBar }>
                   <View id='countdownBar'
-                      style={{width: {countDown}, 
+                      style={{width: countDownWidth, 
                       display:'flex',  backgroundColor:'#f9d69f', justifyContent: 'flex-start', height:20, borderRadius: 5, borderColor: 'transparent'  }}>
-                      <Text>.</Text>
+                      <Text>p={countDownWidth}</Text>
                   </View>
               </View>
 

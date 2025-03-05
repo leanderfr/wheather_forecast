@@ -8,4 +8,7 @@ global.milisecondsToRefresh = 5000;
 global.countDown = global.milisecondsToRefresh/1000;
 global.countDownWidth = '100%';
 
+global.countDownProcess = null;
+global.fetchForecastsProcess = null;
+
 
