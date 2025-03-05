@@ -27,7 +27,6 @@ const RootLayout = () => {
       header: Header,
     }} >;
 
-    {/* titulo diferenciado para cada pagina */}
     <Stack.Screen name='index'  options={{title: 'Home'}}  />
 
 

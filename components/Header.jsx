@@ -101,9 +101,12 @@ const Header = (props) => {
                   {/* seta para voltar e cidade */}
                   {/* seta nunca sera exibida porque infelizmente nao deu tempo de fazer o CRUD para criar/editar novas cidades , esse crud teria vai/volta de janelas */}
                   <View style = {styles.headerLeftInfo} >
-                    {canGetBack ? 
-                      <Image source={require('@images/back-arrow2.png')}  />
-                    : ('.') }
+
+{/*
+                    {canGetBack ?                     
+                      <Image source={require('@images/back-arrow2.png')}  /> : '.' 
+                    }
+*/}
 
                     <Text style={styles.city}> {currentCity} </Text>
                   </View>
@@ -119,7 +122,6 @@ const Header = (props) => {
                       <Image source={require('@images/_bola3.png')}  />
                       <Image source={require('@images/_bola2.png')}  />
                       <Image source={require('@images/_bola1.png')}  />
-
                   </View>
 
                   {/* ultima temperatura obtida */}
@@ -129,15 +131,16 @@ const Header = (props) => {
               </View>
 
               <View style={styles.countdownBar }>
-                <View style={styles.progressBar}>Recarregando em... </View>
-
+                <View style={styles.bar}>
+                  <Text>Recarregando em... </Text>
+                </View>
               </View>
 
           </>
         )
 
       }
-      </View>
+    </View>
 
   )
 
@@ -185,23 +188,24 @@ const styles = StyleSheet.create( {
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    
   },
 
-  progressBar: {
+  bar: {
     width: '80%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    backgroundColor: '#EF990F',
+    backgroundColor: '#f9d69f',
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 20,
-    height: 25,
+    height: 30,
     marginBottom: 5,
     textAlign: 'center',
     fontFamily: 'Roboto',
-    color:'#f2f2f2',
+    color:'black',
   },
 
 

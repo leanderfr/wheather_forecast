@@ -151,6 +151,7 @@ const styles = StyleSheet.create( {
 container: {
   display: 'flex',
   flex: 1,
+  /*marginTop:40,*/
 },
 
 
