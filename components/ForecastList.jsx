@@ -28,6 +28,7 @@ const styles = StyleSheet.create( {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+    width: '100%',
     gap: 20,
   },
 

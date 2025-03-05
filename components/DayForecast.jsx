@@ -43,18 +43,25 @@ const DayForecast = ( {forecast}) => {
   // exemplo "dt_txt": "2025-03-05 03:00:00"
   var parts = forecast.dt_txt.split(' ')[0].split('-');   // obtem so a data
   var actualDate = new Date(parts[0], parts[1] - 1, parts[2]); 
-  var actualDateTxt =  parts[2] + '/' +parts[1];    // dd/mm
+  var dayAndMonth =  parts[2] + '/' +parts[1];    // dd/mm
 
   const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-  let weekDayTxt = weekdays[actualDate.getDay()];
+  let weekday = weekdays[actualDate.getDay()];
 
+  let weatherDetail = forecast.weather[0].description.toUpperCase()
 
   return(
 
     <View style={styles.dayForecast} >
-      <Text style={styles.dayWeekTxt}> {weekDayTxt} </Text>
-      <Text style={styles.dayWeek}> {actualDateTxt} </Text>
-      <Image source={{ uri: definedIcon }} style={{width: 100, height: 100}}   />
+      <View style= {styles.dayInfo }>
+          <Text style={styles.weekday}> {weekday} </Text>
+          <Text style={styles.dayAndMonth}> {dayAndMonth} </Text>
+      </View>
+
+      <View style={styles.weatherDetail} >  
+          <Image source={{ uri: definedIcon }} style={{width: 60, height: 60}}   />
+          <Text style={styles.weatherDetailText}> { weatherDetail } </Text>
+      </View>
     </View>
   )
 }
@@ -67,24 +74,43 @@ const styles = StyleSheet.create( {
 
 dayForecast: {
   flex: 1,
-  justifyContent: 'start',
+  justifyContent: 'space-between',
   flexDirection: 'row',
   padding: 10,
   backgroundColor: '#5F5F64',
-  alignItems: 'center',
   fontFamily: 'Roboto',
   color: '#fff',
 },
 
-dayWeekTxt: {
-  fontSize: 23,
-  color: '#fff',
+dayInfo: {
+  display: 'flex',
+  flexDirection: 'row',
+  gap: 30,
 },
 
-dayWeek: {
+weekday: {
+  fontSize: 23,
+  color: '#fff',
+  width: 60,
+},
+
+dayAndMonth: {
   fontSize: 15,
   color: '#fff',
-  paddingTop: 5,
+  paddingTop: 8,
+},
+
+weatherDetail: {
+  display: 'flex',
+  flexDirection: 'column',  
+  color: '#fff',
+  fontSize: 25,
+  justifyContent: 'center',
+  alignItems: 'flex-end',
+},
+weatherDetailText: {
+  color: '#fff',
+  fontSize: 15,
 }
 
 
