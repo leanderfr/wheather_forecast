@@ -11,7 +11,8 @@ const ForecastList = ( {forecasts}) => {
                 return item.dt;
               }}
 
-              renderItem= { ({item}) => <DayForecast forecast={item}  /> } >
+              renderItem= { ({item}) => <DayForecast forecast={item}  /> } 
+              ItemSeparatorComponent={() => <View style={{height: 20}} />} >
             </FlatList>
 
         </View>  )
@@ -28,8 +29,8 @@ const styles = StyleSheet.create( {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    width: '100%',
-    gap: 20,
+    width: '98%',
+    marginVertical: 20,
   },
 
 })
