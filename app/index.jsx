@@ -57,24 +57,33 @@ let  [loading, setLoading] = useState(true);
 
         if (dayToIgnore == onlyDateTxt) continue;    // ignora o 6o dia 
     
-        // ainda nao foi detectada previsao para o dia atual
-        if ( typeof differentWeatherByDay[onlyDateTxt] =='undefined' )  {
+        // ainda nao foi detectada previsao para o dia atual e a previsao feita é nova, nao foi detectada ainda, define como melhor a previsao feita 
+        if ( typeof differentWeatherByDay[onlyDateTxt] == 'undefined' && differentWeatherDetected.indexOf(weatherDescription)==-1 )  {
           differentWeatherByDay[onlyDateTxt] = weatherDescription;
+          differentWeatherDetected.push( weatherDescription );
+          continue;
         }
-        
-        else {        
-            // se a previsao atual ainda nao foi listada, considera como a 'melhor' (inedita) previsao para o dia atual
-            if ( differentWeatherDetected.indexOf(weatherDescription)==-1 )  {
-              differentWeatherDetected.push( weatherDescription );
-              differentWeatherByDay[onlyDateTxt] = weatherDescription
-            }
+      }
+
+      // se algum dos dias ficou sem melhor previsao definida, considera como melhor, a 1a previsao feita mesmo
+      for (let f=0; f < result.list.length ; f++)  {
+        let weatherDescription = result.list[f].weather[0].description;   // scattered clouds, clear sky, etc etc
+        let onlyDateTxt = result.list[f].dt_txt.split(' ')[0];   // yyyy-mm-dd
+
+        if (dayToIgnore == onlyDateTxt) continue;    // ignora o 6o dia 
+    
+        // ainda nao foi detectada previsao para o dia atual, define como melhor a 1a previsao obtida mesmo (por enquanto)
+        if ( typeof differentWeatherByDay[onlyDateTxt] == 'undefined'  )  {
+          differentWeatherByDay[onlyDateTxt] = weatherDescription;
+          continue;
         }
       }
 
 
-//      for (var key in differentWeatherByDay) {
-//          console.log('e='+key+':'+differentWeatherByDay[key]);
-//      }
+
+      for (var key in differentWeatherByDay) {
+          console.log('e='+key+':'+differentWeatherByDay[key]);
+      }
 
       let bestDetectedWeatherByDay = [];
       let dayAlreadyProcessed = [];
@@ -87,7 +96,7 @@ let  [loading, setLoading] = useState(true);
         if (dayToIgnore == onlyDateTxt) continue;
 
         // se a previsao atual (dentre as 8 previsoes diarias - 1 a cada 3 horas) tiver o prognostico mais diferente, inedito, detectado acima, considera ela como a que sera exibida
-        if ( differentWeatherByDay[onlyDateTxt] = weatherDescription && typeof dayAlreadyProcessed[onlyDateTxt]=='undefined' ) {
+        if ( differentWeatherByDay[onlyDateTxt] == weatherDescription && typeof dayAlreadyProcessed[onlyDateTxt]=='undefined' ) {
           bestDetectedWeatherByDay.push( result.list[f] )        
           dayAlreadyProcessed[onlyDateTxt] = 'yes';
         }
@@ -101,9 +110,6 @@ let  [loading, setLoading] = useState(true);
       // das 24 previsoes por dia, filtra somente a melhor do dia (melhor= diferente das demais de outros dias)
       setForecasts( bestDetectedWeatherByDay );
       setLoading(false);
-
-
-
   }
 
 
