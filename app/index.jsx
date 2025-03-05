@@ -21,7 +21,9 @@ let  [loading, setLoading] = useState(true);
   const fetchForecasts = async () => {
     setLoading(true);
 
-      const url = 'https://jsonplaceholder.typicode.com/users';
+      //const url = 'https://jsonplaceholder.typicode.com/users';
+      const url = 'http://api.openweathermap.org/data/2.5/forecast?lat=-25.44&lon=-49.27&exclude=hourly,daily&appid=16d36634b5e4685c33d6fe0280aeb8a1'
+
       let result = await fetch(url);
 
 console.log('carregou......................');
@@ -32,8 +34,18 @@ console.log('carregou......................');
       }
       result = await result.json()   ;
 
-      setForecasts(result);
-setLoading(false);
+	    let onlyMiddayForecasts = [];
+      for (let f=0; f < result.list.length ; f++)  {
+
+        // a URL acima retorna 40 previsoes, um a cada 3 horas de cada dia, ou seja 5 X 8 = 40
+        // filtrando as previsoes somente do 1/2 dia
+        let dateTxt = result.list[f].dt_txt;
+        if ( dateTxt.indexOf('12:00:00')!=-1 )
+          onlyMiddayForecasts.push( result.list[f] );
+
+      }
+      setForecasts( onlyMiddayForecasts );
+      setLoading(false);
 
   }
 

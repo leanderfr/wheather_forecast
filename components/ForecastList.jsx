@@ -8,7 +8,7 @@ const ForecastList = ( {forecasts}) => {
             <FlatList 
               data = {forecasts}
               keyExtractor={(item, index) => {
-                return item.id;
+                return item.dt;
               }}
 
               renderItem= { ({item}) => <DayForecast forecast={item}  /> } >
