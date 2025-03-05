@@ -45,11 +45,15 @@ const DayForecast = ( {forecast}) => {
   definedIcon = `https://openweathermap.org/img/wn/${definedIcon}@2x.png`;
 
   // exemplo "dt_txt": "2025-03-05 03:00:00"
-  var dateParts = forecast.dt_txt.split(' ')[0].split('-');   // obtem so a data
-  var time = forecast.dt_txt.split(' ')[1];   // obtem so a hora
+  let dateParts = forecast.dt_txt.split(' ')[0].split('-');   // obtem so a data
+  let time = forecast.dt_txt.split(' ')[1];   // obtem so a hora
 
-  var actualDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); 
-  var dayAndMonth =  dateParts[2] + '/' + dateParts[1] + ' - '  +time.substring(0, time.length-3) + ' h';
+  let temperatureKelvin = parseInt(forecast.main.temp, 10)  // converte usando só a parte inteira da temperatura em Kelvin
+  let temperatureCelsius = temperatureKelvin - 273
+
+
+  let actualDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); 
+  let forecastMoment =  dateParts[2] + '/' + dateParts[1] + ' - '  +time.substring(0, time.length-3) + ' h';
 
   const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   let weekday = weekdays[actualDate.getDay()];
@@ -61,8 +65,13 @@ const DayForecast = ( {forecast}) => {
     <View style={styles.dayForecast} >
       <View style= {styles.dayInfo }>
           <Text style={styles.weekday}> {weekday} </Text>
-          <Text style={styles.dayAndMonth}> {dayAndMonth} </Text>
       </View>
+
+      <View style= {styles.forecastMoment }>
+          <Text style={{color:'#fff'}} > {forecastMoment} </Text>
+          <Text style={{color:'#fff'}}> {temperatureCelsius} º </Text>
+      </View>
+
 
       <View style={styles.weatherDetail} >  
           <Image source={{ uri: definedIcon }} style={ styles.weatherIcon }   />
@@ -92,19 +101,22 @@ dayForecast: {
 dayInfo: {
   display: 'flex',
   flexDirection: 'row',
-  gap: 30,
+  flexBasis: '20%',  
+  color:'#fff',
 },
 
 weekday: {
   fontSize: 23,
   color: '#fff',
-  width: 60,
 },
 
-dayAndMonth: {
+forecastMoment: {
   fontSize: 15,
   color: '#fff',
-  paddingTop: 8,
+  paddingTop: 6,
+  display: 'flex',
+  flexBasis: '30%',
+  flexDirection: 'column',
 },
 
 weatherDetail: {
@@ -115,6 +127,8 @@ weatherDetail: {
   fontSize: 25,
   justifyContent: 'center',
   alignItems: 'flex-end',
+  flexBasis: '50%',
+  paddingRight: 20,
 },
 weatherDetailText: {
   color: '#fff',
