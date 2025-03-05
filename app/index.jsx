@@ -22,8 +22,9 @@ let  [loading, setLoading] = useState(true);
     setLoading(true);
 
       //const url = 'https://jsonplaceholder.typicode.com/users';
-      const url = 'http://api.openweathermap.org/data/2.5/forecast?lat=-25.44&lon=-49.27&exclude=hourly,daily&appid=16d36634b5e4685c33d6fe0280aeb8a1'
+      const apiKey = process.env.EXPO_PUBLIC_OPENWEATHER_KEY
 
+      const url = `http://api.openweathermap.org/data/2.5/forecast?lat=-25.44&lon=-49.27&exclude=hourly,daily&appid=${apiKey}`
       let result = await fetch(url);
 
 console.log('carregou......................');

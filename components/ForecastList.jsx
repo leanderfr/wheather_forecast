@@ -1,10 +1,10 @@
 
-import { View, FlatList } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 import DayForecast from './DayForecast';
 
 const ForecastList = ( {forecasts}) => {
 
-  return(<View >
+  return(<View style={styles.forecastList} >
             <FlatList 
               data = {forecasts}
               keyExtractor={(item, index) => {
@@ -20,4 +20,15 @@ const ForecastList = ( {forecasts}) => {
 
 export default ForecastList;
 
-//renderItem= { ({item}) => <DayForecast forecast={item}  /> } >
+//**********************************************************************
+//**********************************************************************
+const styles = StyleSheet.create( {
+
+  forecastList: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    gap: 20,
+  },
+
+})

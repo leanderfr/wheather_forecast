@@ -1,5 +1,6 @@
 
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
+
 
 const DayForecast = ( {forecast}) => {
 
@@ -36,19 +37,55 @@ const DayForecast = ( {forecast}) => {
       definedIcon = weatherIcons[w][2];
       break;
     }
-  }
-  
+  }  
   definedIcon = `https://openweathermap.org/img/wn/${definedIcon}@2x.png`;
+
+  // exemplo "dt_txt": "2025-03-05 03:00:00"
+  var parts = forecast.dt_txt.split(' ')[0].split('-');   // obtem so a data
+  var actualDate = new Date(parts[0], parts[1] - 1, parts[2]); 
+  var actualDateTxt =  parts[2] + '/' +parts[1];    // dd/mm
+
+  const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  let weekDayTxt = weekdays[actualDate.getDay()];
+
 
   return(
 
-    <View>
-      <Text >{forecast.dt_txt }{weatherCode}</Text>
+    <View style={styles.dayForecast} >
+      <Text style={styles.dayWeekTxt}> {weekDayTxt} </Text>
+      <Text style={styles.dayWeek}> {actualDateTxt} </Text>
       <Image source={{ uri: definedIcon }} style={{width: 100, height: 100}}   />
     </View>
   )
-
-
 }
 
 export default DayForecast;
+
+//**********************************************************************
+//**********************************************************************
+const styles = StyleSheet.create( {
+
+dayForecast: {
+  flex: 1,
+  justifyContent: 'start',
+  flexDirection: 'row',
+  padding: 10,
+  backgroundColor: '#5F5F64',
+  alignItems: 'center',
+  fontFamily: 'Roboto',
+  color: '#fff',
+},
+
+dayWeekTxt: {
+  fontSize: 23,
+  color: '#fff',
+},
+
+dayWeek: {
+  fontSize: 15,
+  color: '#fff',
+  paddingTop: 5,
+}
+
+
+})
