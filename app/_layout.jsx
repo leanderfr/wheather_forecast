@@ -7,13 +7,14 @@ import { useEffect } from 'react';
 
 const RootLayout = () => {
 
+  /* fonte mais bonita que o padrao */
   const [fontLoaded, loadError] = useFonts( {
     Roboto: require('@fonts/RobotoRegular.ttf')
   })
 
+  /* efeito splash enqto carregando fonte */
   useEffect(() => {
     if (fontLoaded) {
-      console.log('carregou');
       SplashScreen.hideAsync();
     }
   }, [fontLoaded, loadError]);
@@ -22,14 +23,20 @@ const RootLayout = () => {
     return null;
   }
 
+  /* o header vai ser definido em 'Header.jsx' */
   return <Stack 
     screenOptions={ {
       header: Header,
     }} >;
 
-    <Stack.Screen name='index'  options={{title: 'Home'}}  />
+    {/*  
 
+    eu comecei a fazer CRUD de cidades que o usuario poderia cadastrar pra acessar previsod o tempo
+    mas o serviço 'https://appwrite.io/' so funciona qdo no computador, no emulador ou no celular nao funciona
+    qq interacao com a base so pode ser feita via sql 
+    <Stack.Screen name='cities'  options={{title: 'Cidades'}}  />
 
+    */ }
 
     </Stack>
 }

@@ -20,6 +20,9 @@ const Header = (props) => {
   const [lastTemperature, setCurrentTemperature] = useState('');
   const [lastForecastUpdate, setLastForecastUpdate] = useState( `${hours}:${minutes}` );
 
+  const [countDown, setCountdown] = useState(60);
+  const [countDownWidth, setCountdownWidth] = useState('0%');
+
   const [loading, setLoading] = useState(true);
 
   //**********************************************************************
@@ -72,8 +75,35 @@ const Header = (props) => {
       readTodayForecast();
     }, global.milisecondsToRefresh);
 
-    return () => clearInterval(interval); 
+    // a cada segundo atualiza a barra de contagem regressiva para novo fetch
+    const intervalCountdown = setInterval(() => {
+      updateCountdown();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval); 
+      clearInterval(intervalCountdown); 
+      //setCountdown(60)
+    }
+
   }, []);
+
+  //**********************************************************************
+  // atualiza a barra de contagem regressiva para novo fetch 
+  //**********************************************************************
+  const updateCountdown = () => {
+
+  global.countDown = global.countDown == 0 ? 60 : global.countDown-1;
+  setCountdown( global.countDown);
+
+  let __countDownWidth = Math.floor((global.countDown * 100 / 60)) + '%'
+  setCountdownWidth( __countDownWidth );
+
+  document.getElementById('countdownBar').style.width =  __countDownWidth
+
+  }
+
+      
 
 
   //**********************************************************************
@@ -82,13 +112,12 @@ const Header = (props) => {
   return (
 
     
-    <View style={styles.headerContainer} >
-    
+        <View>
        { loading ? 
 
         ( 
           <>
-            <View style={styles.headerLoading}>
+            <View style={styles.headerContainer}>
                 <ActivityIndicator size='large' color='#007bff' />   
             </View>
           </>
@@ -96,51 +125,61 @@ const Header = (props) => {
         )  :
         (
           <>
-              <View style={styles.customHeader}  >
+            <View style={styles.headerContainer}>
 
-                  {/* seta para voltar e cidade */}
-                  {/* seta nunca sera exibida porque infelizmente nao deu tempo de fazer o CRUD para criar/editar novas cidades , esse crud teria vai/volta de janelas */}
-                  <View style = {styles.headerLeftInfo} >
+                <View style={styles.threeColsHeader}  >
+                    {/* seta para voltar e cidade */}
+                    {/* seta nunca sera exibida porque infelizmente nao deu tempo de fazer o CRUD para criar/editar novas cidades , esse crud teria vai/volta de janelas */}
+                    <View style = {styles.headerLeftInfo} >
 
-{/*
-                    {canGetBack ?                     
-                      <Image source={require('@images/back-arrow2.png')}  /> : '.' 
-                    }
-*/}
+  {/*
+                      {canGetBack ?                     
+                        <Image source={require('@images/back-arrow2.png')}  /> : '.' 
+                      }
+  */}
 
-                    <Text style={styles.city}> {currentCity} </Text>
-                  </View>
+                      <Text style={styles.city}> {currentCity} </Text>
+                    </View>
 
-                  {/* hora da ultima atualizacao */}
-                  <View style={styles.lastForecastUpdate}>
-                      <Image source={require('@images/_bola3.png')} />
-                      <Image source={require('@images/_bola2.png')}  />
-                      <Image source={require('@images/_bola1.png')}  />
+                    {/* hora da ultima atualizacao */}
+                    <View style={styles.lastForecastUpdate}>
+                        <Image source={require('@images/_bola3.png')} />
+                        <Image source={require('@images/_bola2.png')}  />
+                        <Image source={require('@images/_bola1.png')}  />
 
-                      <Text style={styles.lastForecastUpdateText}> {lastForecastUpdate}</Text>
+                        <Text style={styles.lastForecastUpdateText}> {lastForecastUpdate}</Text>
 
-                      <Image source={require('@images/_bola3.png')}  />
-                      <Image source={require('@images/_bola2.png')}  />
-                      <Image source={require('@images/_bola1.png')}  />
-                  </View>
+                        <Image source={require('@images/_bola3.png')}  />
+                        <Image source={require('@images/_bola2.png')}  />
+                        <Image source={require('@images/_bola1.png')}  />
+                    </View>
 
-                  {/* ultima temperatura obtida */}
-                  <View style={styles.currentTemperature}>
-                      <Text style={styles.currentTemperatureText}> {lastTemperature} </Text>
-                  </View>
+                    {/* ultima temperatura obtida */}
+                    <View style={styles.currentTemperature}>
+                        <Text style={styles.currentTemperatureText}> {lastTemperature} </Text>
+                    </View>
+              </View>
+
+              <View style={styles.loadingText }>
+                <Text style={{ fontSize: 18, color: '#fff', marginTop: -10 }}>Recarregando em {global.countDown} s</Text>
               </View>
 
               <View style={styles.countdownBar }>
-                <View style={styles.bar}>
-                  <Text>Recarregando em... </Text>
-                </View>
+                  <View id='countdownBar'
+ style={{width: {countDown}, display:'flex',  backgroundColor:'#f9d69f', justifyContent: 'flex-start', height:20, borderRadius: 5, borderColor: 'transparent'  }}>&nbsp;<Text>.</Text>
+                  </View>
               </View>
+
+          </View>
+
+       
 
           </>
         )
-
       }
-    </View>
+</View>
+
+
 
   )
 
@@ -154,12 +193,15 @@ const styles = StyleSheet.create( {
     backgroundColor: '#32323C',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start',
-    height: 110,
-    flex: 1,
+    alignItems: 'center',
+    fontFamily: 'Roboto',    
+    justifyContent: 'center',
+    width: '100%',
+    height: 125,
   },
 
-  customHeader: {
+
+  threeColsHeader: {
     backgroundColor: '#32323C',
     display: 'flex',
     flexDirection: 'row',
@@ -170,42 +212,37 @@ const styles = StyleSheet.create( {
     height: 80,
   },
 
-  headerLoading: {
-    backgroundColor: '#32323C',
+  countdownBar: {    
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    fontFamily: 'Roboto',    
-    justifyContent: 'center',
-    width: '100%',
-    height: 110,
-  },
-
-  countdownBar: {
-    height: 30,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    
+    justifyContent: 'flex-start',
+    width: '97%',    
+    flex:1,
+    height: 30,     /* 80 + 30 = 110 (altura total do header) */
+    borderWidth: 2, 
+    borderRadius: 5, 
+    borderStyle: 'solid', 
+    borderColor: 'black',
+    marginBottom: 5,
   },
 
   bar: {
-    width: '80%',
+    width: '95%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     backgroundColor: '#f9d69f',
-    borderColor: 'black',
+    borderColor: 'red',
     borderWidth: 1,
     borderRadius: 20,
-    height: 30,
-    marginBottom: 5,
+    height: 25,
+    marginBottom: 15,
     textAlign: 'center',
     fontFamily: 'Roboto',
     color:'black',
+    fontSize: 25,
   },
 
 
@@ -216,7 +253,7 @@ const styles = StyleSheet.create( {
     flexDirection: 'row', 
     alignItems: 'center' ,
     fontFamily: 'Roboto',
-    flexBasis: '40%',
+    flexBasis: '33%',
     paddingLeft: 15,
     flex: 1,
   },
@@ -240,7 +277,7 @@ const styles = StyleSheet.create( {
     padding: 10,
     fontFamily: 'Roboto',
     alignItems: 'center',
-    flexBasis: '30%',
+    flexBasis: '33%',
     flex: 1,
   },
 
@@ -252,7 +289,7 @@ const styles = StyleSheet.create( {
 
   /* 3a coluna do header */
   currentTemperature: {
-    flexBasis: '30%',
+    flexBasis: '33%',
     textAlign: 'right',
     display: 'flex',
     flexDirection: 'row',
@@ -266,6 +303,14 @@ const styles = StyleSheet.create( {
     color: '#fff',
     fontFamily: 'Roboto',
  },
+
+  loadingText: {
+    display: 'flex',
+    paddingLeft: '3%',
+    width:'100%',
+    paddingTop: -10,
+
+  }
 }
 
 )
