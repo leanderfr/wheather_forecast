@@ -91,8 +91,8 @@ const Header = (props) => {
               </View>
 
               {/* ultima temperatura obtida */}
-              <View>
-                  <Text style={styles.currentTemperature}> {lastTemperature} º</Text>
+              <View style={styles.currentTemperature}>
+                  <Text style={styles.currentTemperatureText}> {lastTemperature} º</Text>
               </View>
 
           </>
@@ -115,8 +115,18 @@ const styles = StyleSheet.create( {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    fontFamily: 'Roboto',    
+  },
+
+  /* 1a coluna do header */
+  headerLeftInfo: {
+    display: 'flex', 
+    flexDirection: 'row', 
+    alignItems: 'center' ,
     fontFamily: 'Roboto',
+    flexBasis: '40%',
+    paddingLeft: 15,
+    flex: 1,
   },
 
   city: {
@@ -126,13 +136,7 @@ const styles = StyleSheet.create( {
     fontFamily: 'Roboto',
   },
 
-  currentTemperature: {
-    fontSize: 30,
-    color: '#fff',
-    fontFamily: 'Roboto',
-    width: 80,
- },
-
+  /* 2a coluna do header */
   lastForecastUpdate: {
     display: 'flex',
     flexDirection: 'row',
@@ -144,7 +148,8 @@ const styles = StyleSheet.create( {
     padding: 10,
     fontFamily: 'Roboto',
     alignItems: 'center',
-    width: 250,
+    flexBasis: '30%',
+    flex: 1,
   },
 
   lastForecastUpdateText: {
@@ -153,14 +158,25 @@ const styles = StyleSheet.create( {
     paddingHorizontal: 10,
   },
 
-  headerLeftInfo: {
-    display: 'flex', 
-    flexDirection: 'row', 
-    alignItems: 'center' ,
+  /* 3a coluna do header */
+  currentTemperature: {
+    flexBasis: '30%',
+    textAlign: 'right',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingRight: 10,
+    flex: 1,
+   },
+
+  currentTemperatureText: {
+    fontSize: 30,
+    color: '#fff',
     fontFamily: 'Roboto',
-    flexBasis: 150,
-    paddingLeft: 15,
-  }
+ },
+
+
+
 }
 
 )

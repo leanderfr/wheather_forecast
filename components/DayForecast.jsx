@@ -101,6 +101,7 @@ dayAndMonth: {
 },
 
 weatherDetail: {
+  paddingTop: -10,
   display: 'flex',
   flexDirection: 'column',  
   color: '#fff',

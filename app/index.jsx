@@ -80,7 +80,7 @@ container: {
   justifyContent: 'start',
   alignItems: 'center',
   padding: 10,
-  backgroundColor: '#5A5A5F',
+  backgroundColor: 'black',
   fontFamily: 'Roboto',
 },
 
