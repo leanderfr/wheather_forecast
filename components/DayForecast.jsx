@@ -51,7 +51,6 @@ const DayForecast = ( {forecast}) => {
   let temperatureKelvin = parseInt(forecast.main.temp, 10)  // converte usando só a parte inteira da temperatura em Kelvin
   let temperatureCelsius = temperatureKelvin - 273
 
-
   let actualDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); 
   let forecastMoment =  dateParts[2] + '/' + dateParts[1] + ' - '  +time.substring(0, time.length-3) + ' h';
 

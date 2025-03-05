@@ -4,13 +4,17 @@ import { useEffect, useState } from 'react';
 import '@/global.js';
 
 
-
 const Header = (props) => {
 
   const canGetBack = props.navigation.canGoBack();
+  const zeroPad = (num, places) => String(num).padStart(places, '0')
 
-  var hours = new Date().getHours(); 
-  var minutes = new Date().getMinutes(); 
+
+  let hours = new Date().getHours(); 
+  let minutes = new Date().getMinutes(); 
+
+  hours = zeroPad(hours, 2)
+  minutes = zeroPad(minutes, 2)
 
   const [currentCity, setCurrentCity] = useState( global._currentCity );
   const [lastTemperature, setCurrentTemperature] = useState('');
@@ -18,81 +22,115 @@ const Header = (props) => {
 
   const [loading, setLoading] = useState(true);
 
-  const MINUTE_MS = 5000;
+  //**********************************************************************
+  // funcao que chama API com as previsoes do tempo para 
+  // hoje + 5 dias 
+  // o 5º dia sera ignorado porque a tarefa pede 5 dias somente (hoje+4)
+  //**********************************************************************
 
-
-  const loadTodayForecast = async () => {
+  const readTodayForecast = async () => {
 
       setLoading(true);
       setCurrentCity( global._currentCity );
 
-      var hours = new Date().getHours(); 
-      var minutes = new Date().getMinutes(); 
-      var sec = new Date().getSeconds(); 
+      // apiKey gerada por mim (Leander) ao me cadastrar no serviço de previsao
+      const apiKey = process.env.EXPO_PUBLIC_OPENWEATHER_KEY
 
-      setCurrentTemperature( sec );
+      // le a previsao do tempo para hoje 
+      const url = `http://api.openweathermap.org/data/2.5/weather?lat=-25.44&lon=-49.27&exclude=hourly,daily&appid=${apiKey}`
+      let result = await fetch(url);
+
+      if (!result.ok) {
+          const message = `Erro ocorreu ao buscar previsão: ${result.status}`;
+          throw new Error(message);
+      }
+      let forecast = await result.json()  ;
+
+      let temperatureKelvin = parseInt(forecast.main.temp, 10)  // converte usando só a parte inteira da temperatura em Kelvin
+      let temperatureCelsius = temperatureKelvin - 273
+
+      setCurrentTemperature( `${temperatureCelsius} º` );
+
+      let hours = new Date().getHours(); 
+      let minutes = new Date().getMinutes(); 
+      hours = zeroPad(hours, 2)
+      minutes = zeroPad(minutes, 2)
 
       setLastForecastUpdate( `${hours}:${minutes}` );
-
-
 
       setLoading(false);
   }
 
+  //**********************************************************************
+  // relê previsoes a cada 'global.milisecondsToRefresh'
+  //**********************************************************************
+
   useEffect(() => {
-    loadTodayForecast();
+    readTodayForecast();
 
     const interval = setInterval(() => {
-      loadTodayForecast();
-    }, MINUTE_MS);
+      readTodayForecast();
+    }, global.milisecondsToRefresh);
 
     return () => clearInterval(interval); 
   }, []);
 
 
+  //**********************************************************************
+  //**********************************************************************
+
   return (
 
     
-    <View style={styles.container}  >
+    <View style={styles.headerContainer} >
     
        { loading ? 
 
         ( 
           <>
-            <Text >.</Text>
-            <ActivityIndicator size='large' color='#007bff' />   
-            <Text >.</Text>
+            <View style={styles.headerLoading}>
+                <ActivityIndicator size='large' color='#007bff' />   
+            </View>
           </>
 
         )  :
         (
           <>
-              {/* seta para voltar e cidade */}
-              <View style = {styles.headerLeftInfo} >
-                {!canGetBack ? 
-                  <Image source={require('@images/back-arrow2.png')}  />
-                : ('.') }
+              <View style={styles.customHeader}  >
 
-                <Text style={styles.city}> {currentCity} </Text>
+                  {/* seta para voltar e cidade */}
+                  {/* seta nunca sera exibida porque infelizmente nao deu tempo de fazer o CRUD para criar/editar novas cidades , esse crud teria vai/volta de janelas */}
+                  <View style = {styles.headerLeftInfo} >
+                    {canGetBack ? 
+                      <Image source={require('@images/back-arrow2.png')}  />
+                    : ('.') }
+
+                    <Text style={styles.city}> {currentCity} </Text>
+                  </View>
+
+                  {/* hora da ultima atualizacao */}
+                  <View style={styles.lastForecastUpdate}>
+                      <Image source={require('@images/_bola3.png')} />
+                      <Image source={require('@images/_bola2.png')}  />
+                      <Image source={require('@images/_bola1.png')}  />
+
+                      <Text style={styles.lastForecastUpdateText}> {lastForecastUpdate}</Text>
+
+                      <Image source={require('@images/_bola3.png')}  />
+                      <Image source={require('@images/_bola2.png')}  />
+                      <Image source={require('@images/_bola1.png')}  />
+
+                  </View>
+
+                  {/* ultima temperatura obtida */}
+                  <View style={styles.currentTemperature}>
+                      <Text style={styles.currentTemperatureText}> {lastTemperature} </Text>
+                  </View>
               </View>
 
-              {/* hora da ultima atualizacao */}
-              <View style={styles.lastForecastUpdate}>
-                  <Image source={require('@images/_bola3.png')} />
-                  <Image source={require('@images/_bola2.png')}  />
-                  <Image source={require('@images/_bola1.png')}  />
+              <View style={styles.countdownBar }>
+                <View style={styles.progressBar}>Recarregando em... </View>
 
-                  <Text style={styles.lastForecastUpdateText}> {lastForecastUpdate}</Text>
-
-                  <Image source={require('@images/_bola3.png')}  />
-                  <Image source={require('@images/_bola2.png')}  />
-                  <Image source={require('@images/_bola1.png')}  />
-
-              </View>
-
-              {/* ultima temperatura obtida */}
-              <View style={styles.currentTemperature}>
-                  <Text style={styles.currentTemperatureText}> {lastTemperature} º</Text>
               </View>
 
           </>
@@ -101,22 +139,72 @@ const Header = (props) => {
       }
       </View>
 
-
-
   )
 
 }
 
+//**********************************************************************
+//**********************************************************************
 const styles = StyleSheet.create( {
 
-  container: {
-    height: 80,
+  headerContainer: {
+    backgroundColor: '#32323C',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    height: 110,
+    flex: 1,
+  },
+
+  customHeader: {
     backgroundColor: '#32323C',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     fontFamily: 'Roboto',    
+    justifyContent: 'space-between',
+    width: '100%',
+    height: 80,
   },
+
+  headerLoading: {
+    backgroundColor: '#32323C',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontFamily: 'Roboto',    
+    justifyContent: 'center',
+    width: '100%',
+    height: 110,
+  },
+
+  countdownBar: {
+    height: 30,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+
+  progressBar: {
+    width: '80%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#EF990F',
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 20,
+    height: 25,
+    marginBottom: 5,
+    textAlign: 'center',
+    fontFamily: 'Roboto',
+    color:'#f2f2f2',
+  },
+
+
 
   /* 1a coluna do header */
   headerLeftInfo: {
@@ -174,12 +262,12 @@ const styles = StyleSheet.create( {
     color: '#fff',
     fontFamily: 'Roboto',
  },
-
-
-
 }
 
 )
 
+
+//**********************************************************************
+//**********************************************************************
 
 export  default Header;
