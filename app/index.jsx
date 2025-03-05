@@ -27,26 +27,82 @@ let  [loading, setLoading] = useState(true);
       const url = `http://api.openweathermap.org/data/2.5/forecast?lat=-25.44&lon=-49.27&exclude=hourly,daily&appid=${apiKey}`
       let result = await fetch(url);
 
-console.log('carregou......................');
-      
       if (!result.ok) {
           const message = `An error has occured: ${result.status}`;
           throw new Error(message);
       }
-      result = await result.json()   ;
+      result = await result.json()  ;
 
-	    let onlyMiddayForecasts = [];
-      for (let f=0; f < result.list.length ; f++)  {
+      let differentWeatherDetected = [];
+      let differentWeatherByDay = [];
 
-        // a URL acima retorna 40 previsoes, um a cada 3 horas de cada dia, ou seja 5 X 8 = 40
-        // filtrando as previsoes somente do 1/2 dia
-        let dateTxt = result.list[f].dt_txt;
-        if ( dateTxt.indexOf('12:00:00')!=-1 )
-          onlyMiddayForecasts.push( result.list[f] );
-
+      // a API acima comecou do nada a enviar previsao de 6 dias, ate ontem (terça feira 04/03/25) estava enviando so 5 dias 
+      // o codigo abaixo detecta o 6o dia para mais adiante ignora lo
+      Date.prototype.addDays = function(days) {
+          var date = new Date(this.valueOf());
+          date.setDate(date.getDate() + days);
+          return date;
       }
-      setForecasts( onlyMiddayForecasts );
+
+      let today = new Date();
+      let dayToIgnore = today.addDays(5).toISOString().split('T')[0]
+
+      // a API acima envia previsao de 3 em 3 horas para cada dia, o algoritmo abaixo tenta descobrir dentre as previsoes de cada dia, 
+      // qual a previsao que ainda nao apareceu dentre todas as previsoes
+      // faz isso porque se por exemplo, for obtida a previsao só de um horario (meio dia, por exemplo),  a chance de ser uma previsao repetida de um dia anterior é grande
+      // tenta pegar previsoes diferentes para 'enriquecer' o prognostico do tempo
+      for (let f=0; f < result.list.length ; f++)  {
+        let weatherDescription = result.list[f].weather[0].description;   // scattered clouds, clear sky, etc etc
+        let onlyDateTxt = result.list[f].dt_txt.split(' ')[0];   // yyyy-mm-dd
+
+        if (dayToIgnore == onlyDateTxt) continue;    // ignora o 6o dia 
+    
+        // ainda nao foi detectada previsao para o dia atual
+        if ( typeof differentWeatherByDay[onlyDateTxt] =='undefined' )  {
+          differentWeatherByDay[onlyDateTxt] = weatherDescription;
+        }
+        
+        else {        
+            // se a previsao atual ainda nao foi listada, considera como a 'melhor' (inedita) previsao para o dia atual
+            if ( differentWeatherDetected.indexOf(weatherDescription)==-1 )  {
+              differentWeatherDetected.push( weatherDescription );
+              differentWeatherByDay[onlyDateTxt] = weatherDescription
+            }
+        }
+      }
+
+
+//      for (var key in differentWeatherByDay) {
+//          console.log('e='+key+':'+differentWeatherByDay[key]);
+//      }
+
+      let bestDetectedWeatherByDay = [];
+      let dayAlreadyProcessed = [];
+
+      // filtra somente a previsao do dia/horario que foi considerada acima como a 'melhor' (inedita) previsao para o dia
+      for (let f=0; f < result.list.length ; f++)  {
+        let weatherDescription = result.list[f].weather[0].description;   // scattered clouds, clear sky, etc etc
+        let onlyDateTxt = result.list[f].dt_txt.split(' ')[0];   // yyyy-mm-dd
+
+        if (dayToIgnore == onlyDateTxt) continue;
+
+        // se a previsao atual (dentre as 8 previsoes diarias - 1 a cada 3 horas) tiver o prognostico mais diferente, inedito, detectado acima, considera ela como a que sera exibida
+        if ( differentWeatherByDay[onlyDateTxt] = weatherDescription && typeof dayAlreadyProcessed[onlyDateTxt]=='undefined' ) {
+          bestDetectedWeatherByDay.push( result.list[f] )        
+          dayAlreadyProcessed[onlyDateTxt] = 'yes';
+        }
+      }
+
+//      for (var key in bestDetectedWeatherByDay) {
+//          console.log('e='+key+':'+bestDetectedWeatherByDay[key]);
+//      }
+
+
+      // das 24 previsoes por dia, filtra somente a melhor do dia (melhor= diferente das demais de outros dias)
+      setForecasts( bestDetectedWeatherByDay );
       setLoading(false);
+
+
 
   }
 

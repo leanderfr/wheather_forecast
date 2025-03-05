@@ -38,12 +38,18 @@ const DayForecast = ( {forecast}) => {
       break;
     }
   }  
+
+
+  // o algoritmo acima nao era necesssario porque a API retorna o icone, eu nao sabia disso, vou manter o algotirmo por uma questao de historico excepcionalmente
+  definedIcon = forecast.weather[0].icon
   definedIcon = `https://openweathermap.org/img/wn/${definedIcon}@2x.png`;
 
   // exemplo "dt_txt": "2025-03-05 03:00:00"
-  var parts = forecast.dt_txt.split(' ')[0].split('-');   // obtem so a data
-  var actualDate = new Date(parts[0], parts[1] - 1, parts[2]); 
-  var dayAndMonth =  parts[2] + '/' +parts[1];    // dd/mm
+  var dateParts = forecast.dt_txt.split(' ')[0].split('-');   // obtem so a data
+  var time = forecast.dt_txt.split(' ')[1];   // obtem so a hora
+
+  var actualDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]); 
+  var dayAndMonth =  dateParts[2] + '/' + dateParts[1] + ' - '  +time.substring(0, time.length-3) + ' h';
 
   const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   let weekday = weekdays[actualDate.getDay()];
@@ -59,7 +65,7 @@ const DayForecast = ( {forecast}) => {
       </View>
 
       <View style={styles.weatherDetail} >  
-          <Image source={{ uri: definedIcon }} style={{width: 60, height: 60}}   />
+          <Image source={{ uri: definedIcon }} style={ styles.weatherIcon }   />
           <Text style={styles.weatherDetailText}> { weatherDetail } </Text>
       </View>
     </View>
@@ -80,6 +86,7 @@ dayForecast: {
   backgroundColor: '#5F5F64',
   fontFamily: 'Roboto',
   color: '#fff',
+  borderRadius: 10,
 },
 
 dayInfo: {
@@ -112,7 +119,16 @@ weatherDetail: {
 weatherDetailText: {
   color: '#fff',
   fontSize: 15,
+},
+
+weatherIcon: {
+  width: 60,
+  height: 60,
+  /* o icone obtido possui uma margem interna superior que faz parecer que esta desalinhado, necessario 'subir' o icon 20 pixels para alinhar */
+  marginTop: -20,
+
 }
+
 
 
 })
