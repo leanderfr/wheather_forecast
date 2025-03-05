@@ -20,8 +20,8 @@ const Header = (props) => {
   const [lastTemperature, setCurrentTemperature] = useState('');
   const [lastForecastUpdate, setLastForecastUpdate] = useState( `${hours}:${minutes}` );
 
-  const [countDown, setCountdown] = useState(60);
-  const [countDownWidth, setCountdownWidth] = useState('0%');
+  const [countDown, setCountdown] = useState( global.milisecondsToRefresh/1000 );
+  const [countDownWidth, setCountdownWidth] = useState('100%');
 
   const [loading, setLoading] = useState(true);
 
@@ -69,6 +69,7 @@ const Header = (props) => {
   //**********************************************************************
 
   useEffect(() => {
+
     readTodayForecast();
 
     const interval = setInterval(() => {
@@ -77,6 +78,9 @@ const Header = (props) => {
 
     // a cada segundo atualiza a barra de contagem regressiva para novo fetch
     const intervalCountdown = setInterval(() => {
+  // começa com a barra de contagem regressiva completa
+  document.getElementById('countdownBar').style.width = '100%'
+
       updateCountdown();
     }, 1000);
 
@@ -93,10 +97,15 @@ const Header = (props) => {
   //**********************************************************************
   const updateCountdown = () => {
 
-  global.countDown = global.countDown == 0 ? 60 : global.countDown-1;
+  // necessario usar variavel global pq o calculo da barra de progresso em pixels usa a variavel de state 'countDown',  
+  // que nao pode ser acessada por aqui, ela so é acessivel dentro de 'setCountdown()'
+
+  // countDown é um espelho de global.countDown  e,
+  // countDownWidth é um espelho de global.countDownWidth
+  global.countDown = global.countDown == 0 ? global.milisecondsToRefresh/1000 : global.countDown-1;
   setCountdown( global.countDown);
 
-  let __countDownWidth = Math.floor((global.countDown * 100 / 60)) + '%'
+  let __countDownWidth = Math.floor((global.countDown * 100 / (global.milisecondsToRefresh/1000)  )) + '%'
   setCountdownWidth( __countDownWidth );
 
   document.getElementById('countdownBar').style.width =  __countDownWidth
@@ -166,7 +175,9 @@ const Header = (props) => {
 
               <View style={styles.countdownBar }>
                   <View id='countdownBar'
- style={{width: {countDown}, display:'flex',  backgroundColor:'#f9d69f', justifyContent: 'flex-start', height:20, borderRadius: 5, borderColor: 'transparent'  }}>&nbsp;<Text>.</Text>
+                      style={{width: {countDown}, 
+                      display:'flex',  backgroundColor:'#f9d69f', justifyContent: 'flex-start', height:20, borderRadius: 5, borderColor: 'transparent'  }}>
+                      <Text>.</Text>
                   </View>
               </View>
 
@@ -223,7 +234,7 @@ const styles = StyleSheet.create( {
     borderWidth: 2, 
     borderRadius: 5, 
     borderStyle: 'solid', 
-    borderColor: 'black',
+    borderColor: 'gray',
     marginBottom: 5,
   },
 
@@ -306,7 +317,7 @@ const styles = StyleSheet.create( {
 
   loadingText: {
     display: 'flex',
-    paddingLeft: '3%',
+    paddingLeft: '2%',
     width:'100%',
     paddingTop: -10,
 

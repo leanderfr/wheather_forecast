@@ -3,9 +3,9 @@ global._currentCity = 'Curitiba';
 global._lastTemperature = '';
 global._lastForecastUpdate = '';
 
-global.milisecondsToRefresh = 60000;
+global.milisecondsToRefresh = 5000;
 
-global.countDown = 60;
-global.countDownWidth = 60;
+global.countDown = global.milisecondsToRefresh/1000;
+global.countDownWidth = '100%';
 
 
